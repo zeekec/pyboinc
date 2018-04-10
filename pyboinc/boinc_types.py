@@ -1,0 +1,2 @@
+class BoincException(Exception):
+    pass
