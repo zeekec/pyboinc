@@ -8,11 +8,11 @@ setup(
     author='Erik Zeek',
     author_email='zeekec@gmail.com',
     license='GPL3+',
-    packages=['pyboinc'],
-    scripts=['bin/pyboinc'],
+    py_modules=['pyboinc'],
+    scripts=['pyboinccmd'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
-    install_requires=[],
+    install_requires=['xmltodict'],
     include_package_data=True,
     zip_safe=False)
 

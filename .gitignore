@@ -101,3 +101,4 @@ ENV/
 .mypy_cache/
 
 *.kdev4
+.pytest_cache/

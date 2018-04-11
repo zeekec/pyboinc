@@ -69,39 +69,47 @@ class BoincSocket:
 
 class BoincRpc(BoincSocket):
     def __init__(self, host=None, port=31416, timeout=None):
-        BoincSocket.__init__(self, host, port, timeout)
+        super().__init__(host, port, timeout)
 
     def wrap_request(self, req):
         d = {'boinc_gui_rpc_request': req}
-        return convert_dict_to_xml(d)
+        return d
 
     def wrap_command(self, cmd):
-        d = {cmd: {}}
-        return self.wrap_request(d)
+        d = {cmd: None}
+        return d
+
+    def error_handler(self, d):
+        if 'boinc_gui_rpc_reply' not in d:
+            raise BoincException("Did not get a 'boinc_gui_rpc_reply': " + str(d))
+
+        d = d['boinc_gui_rpc_reply']
+
+        if 'error' in d:
+            raise BoincException("Error in BOINC reply: " + str(d))
+
+        return d
+
+    def call(self, req):
+        msg = convert_dict_to_xml(self.wrap_request(req))
+        rep = super().call(msg)
+        d = convert_xml_to_dict(rep)
+
+        return self.error_handler(d)
 
     def command(self, cmd):
         msg = self.wrap_command(cmd)
         rep = self.call(msg)
 
-        return convert_xml_to_dict(rep)
+        return rep
 
 
 if __name__ == '__main__':
     with BoincSocket() as bc:
-        print(
-            convert_xml_to_dict(
-                bc.call(b"<boinc_gui_rpc_request><exchange_versions  /></boinc_gui_rpc_request>").decode()
-            )
-        )
-        print(
-            convert_xml_to_dict(bc.call(b"<boinc_gui_rpc_request><get_host_info  /></boinc_gui_rpc_request>").decode())
-        )
-        print(convert_xml_to_dict(bc.call(b"<boinc_gui_rpc_request><auth1  /></boinc_gui_rpc_request>").decode()))
-        print(
-            convert_xml_to_dict(
-                bc.call(b"<boinc_gui_rpc_request><aasdfafsdfasdfasdf /></boinc_gui_rpc_request>").decode()
-            )
-        )
+        print(bc.call(b"<boinc_gui_rpc_request><exchange_versions  /></boinc_gui_rpc_request>"))
+        print(bc.call(b"<boinc_gui_rpc_request><get_host_info  /></boinc_gui_rpc_request>"))
+        print(bc.call(b"<boinc_gui_rpc_request><auth1  /></boinc_gui_rpc_request>"))
+        print(bc.call(b"<boinc_gui_rpc_request><aasdfafsdfasdfasdf /></boinc_gui_rpc_request>"))
 
     with BoincRpc() as br:
         print(br.command('exchange_versions'))

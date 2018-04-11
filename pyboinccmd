@@ -1,0 +1,11 @@
+#!/usr/bin/env python3
+
+import argparse
+
+import pyboinc
+
+if __name__ == '__main__':
+    with pyboinc.BoincRpc() as br:
+        print(br.command('exchange_versions'))
+        print(br.command('auth1'))
+        print(br.command('get_host_info'))
