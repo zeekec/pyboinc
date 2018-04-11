@@ -89,7 +89,7 @@ class TestBoincRpc:
                 b'<aboinc_gui_rpc_reply>\n<error>unrecognized op: aasdfafsdfasdfasdf/</error>\n</aboinc_gui_rpc_reply>\n\x03'
             ]
             with pyboinc.BoincRpc() as bc:
-                with pytest.raises(pyboinc.BoincException,match="Did not get a 'boinc_gui_rpc_reply': {'aboinc_gui_rpc_reply': {'error': 'unrecognized op: aasdfafsdfasdfasdf/'}}"):
+                with pytest.raises(pyboinc.BoincBadReply,match="Did not get a 'boinc_gui_rpc_reply': {'aboinc_gui_rpc_reply': {'error': 'unrecognized op: aasdfafsdfasdfasdf/'}}"):
                     bc.call({'aasdfafsdfasdfasdf': {}})
 
     def test_call_error(self, mock_socket):
@@ -97,5 +97,5 @@ class TestBoincRpc:
             b'<boinc_gui_rpc_reply>\n<error>unrecognized op: aasdfafsdfasdfasdf/</error>\n</boinc_gui_rpc_reply>\n\x03'
         ]
         with pyboinc.BoincRpc() as bc:
-            with pytest.raises(pyboinc.BoincException,match=''):
+            with pytest.raises(pyboinc.BoincBadRequest,match=''):
                 bc.call({'aasdfafsdfasdfasdf': {}})

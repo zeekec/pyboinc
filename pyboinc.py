@@ -7,6 +7,14 @@ class BoincException(Exception):
     pass
 
 
+class BoincBadReply(BoincException):
+    pass
+
+
+class BoincBadRequest(BoincException):
+    pass
+
+
 def convert_xml_to_dict(msg):
     return json.loads(json.dumps(xmltodict.parse(msg)))
 
@@ -81,12 +89,12 @@ class BoincRpc(BoincSocket):
 
     def error_handler(self, d):
         if 'boinc_gui_rpc_reply' not in d:
-            raise BoincException("Did not get a 'boinc_gui_rpc_reply': " + str(d))
+            raise BoincBadReply("Did not get a 'boinc_gui_rpc_reply': " + str(d))
 
         d = d['boinc_gui_rpc_reply']
 
         if 'error' in d:
-            raise BoincException("Error in BOINC reply: " + str(d))
+            raise BoincBadRequest("Error in BOINC reply: " + str(d))
 
         return d
 
