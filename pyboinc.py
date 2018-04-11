@@ -2,7 +2,9 @@ import socket
 import re
 import xmltodict, json
 
-from boinc_types import *
+
+class BoincException(Exception):
+    pass
 
 
 def convert_xml_to_dict(msg):
